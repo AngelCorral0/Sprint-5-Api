@@ -48,6 +48,14 @@ class UserController extends Controller
         return response($response, 201);
     }
 
+    public function Login(Request $request)
+    {
+        $credentials = [
+            'email'=>$request->email,
+            'password'=>$request->password,
+        ];
+    }
+
     /**
      * Display the specified resource.
      */
