@@ -24,15 +24,15 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function register(Request $request)
     {
        $request->validate([
             'email' => ['required', 'unique:users', 'string', 'email'],
             'username' => ['max:25', 'string'],
             'password' => ['required', 'string']
-    ]);
+        ]);
 
-        $user = new User();
+            $user = new User();
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             if(!$request->username){
@@ -40,9 +40,12 @@ class UserController extends Controller
             }else{
                 $user->username = $request->usermane;
             }
-        
-        return response();
-       
+            $request->admin_password == "Admin123456" ? $user->assignRole('admin') : $user->assignRole('user');
+            $user->save();
+            $response = [
+                'user' => $user
+            ];
+        return response($response, 201);
     }
 
     /**
