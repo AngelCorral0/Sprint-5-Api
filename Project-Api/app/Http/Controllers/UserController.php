@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Validator;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use stdClass;
+
 
 class UserController extends Controller
 {
@@ -19,20 +24,28 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function register(Request $request)
     {
-        $require =[
-            'name' =>'required, max:25',
-            'email'=> 'required',
-            'password'=>'required'
-        ];
+       $request->validate([
+            'email' => ['required', 'unique:users', 'string', 'email'],
+            'username' => ['max:25', 'string'],
+            'password' => ['required', 'string']
+        ]);
 
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = $request->password;
-        $user->save();
-        return response()->json($user);
+            $user = new User();
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            if(!$request->username){
+                $user = 'Anonymous';
+            }else{
+                $user->username = $request->usermane;
+            }
+            $request->admin_password == "Admin123456" ? $user->assignRole('admin') : $user->assignRole('user');
+            $user->save();
+            $response = [
+                'user' => $user
+            ];
+        return response($response, 201);
     }
 
     /**
