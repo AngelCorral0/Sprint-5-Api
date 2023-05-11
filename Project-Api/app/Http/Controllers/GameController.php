@@ -19,12 +19,19 @@ class GameController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dice1 = random_int(1,6);
+        $dice2 = random_int(1,6);
+        $totalValue = $dice1+$dice2;
+
+        if($totalValue == 7){
+            return "You won!";
+        }else{
+            return "Try loss!";
+        }
+
     }
 
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(string $id)
     {
         //
