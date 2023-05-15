@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,12 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
 
-    Route::get('/players', 'UserController@index');
-    Route::post('/players', 'UserController@register');
+    Route::get('/players',[UserController:: class, 'index']);
+    Route::post('/players', [UserController:: class, 'register']);
     Route::get('/players/{user}', 'UserController@show');
     Route::put('/players/{user}', 'UserController@update');
     Route::delete('/players/{user}', 'UserController@destroy');
-});
+//});

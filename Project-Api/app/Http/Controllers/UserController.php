@@ -18,9 +18,6 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function register(Request $request)
     {
        $request->validate([
@@ -63,17 +60,11 @@ class UserController extends Controller
         return response(['user'=> Auth::user(), 'access_token'=> $accessToken]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
         return response()->json($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, User $user)
     {
         $user->name = $request->name;
@@ -83,9 +74,6 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
         $user->delete();
