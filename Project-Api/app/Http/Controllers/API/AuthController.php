@@ -21,21 +21,26 @@ class AuthController extends Controller
             'username' => ['max:25', 'string'],
             'password' => ['required', 'string']
         ]);
-        if($request->username == null){
-            $request->merge(['username' => 'Anonymous']);
+        
+        if($request->username == null||$request->username ==''){
+            $request->merge(['username' => 'Anonymous']); 
+        }else{
+            $request->username;
         }
        
-
         $validatedData['password'] = Hash::make($request->password);
            
         $user = User::create($validatedData);
         $accessToken = $user->createToken('authToken')->accessToken;
+
     
         return response([
             'message' => 'User registered',
-            'user' => $user,   
+        'user' => [
+            'username' => $request->username,
+            'email'=>$request->email,
             'access_token' => $accessToken
-        ],201);
+        ],201]);
     }
         
     
