@@ -20,7 +20,10 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 
-    Route::post('/players', [AuthController::class, 'register']);
+    Route::post('/players', [AuthController::class, 'register'])->name('register');
+    Route::post('/players/login', [AuthController::class, 'login'])->name('login');
+
+
     Route::get('/players/{user}', 'UserController@show');
     Route::put('/players/{user}', 'UserController@update');
     Route::delete('/players/{user}', 'UserController@destroy');
