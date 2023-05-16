@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\GameController;
+use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,12 +17,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
 
-    Route::get('/players', 'UserController@index');
-    Route::post('/players', 'UserController@register');
+    Route::post('/players', [AuthController::class, 'register']);
     Route::get('/players/{user}', 'UserController@show');
     Route::put('/players/{user}', 'UserController@update');
     Route::delete('/players/{user}', 'UserController@destroy');
-});
+//});

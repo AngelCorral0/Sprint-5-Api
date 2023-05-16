@@ -1,46 +1,58 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $user = User::all();
-        return response()->json($user);
-    }
+    use HasApiTokens;
 
     public function register(Request $request)
     {
-       $request->validate([
+        
+       $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'string', 'email'],
             'username' => ['max:25', 'string'],
             'password' => ['required', 'string']
         ]);
+        if($request->username == null){
+            $request->merge(['username' => 'Anonymous']);
+        }
+       
 
-            $user = new User();
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            if(!$request->username){
-                $user = 'Anonymous';
-            }else{
-                $user->username = $request->usermane;
-            }
-            $request->admin_password == "Admin123456" ? $user->assignRole('admin') : $user->assignRole('user');
-            $user->save();
-            $response = [
-                'user' => $user
-            ];
-        return response($response, 201);
+        $validatedData['password'] = Hash::make($request->password);
+           
+        $user = User::create($validatedData);
+        $accessToken = $user->createToken('authToken')->accessToken;
+    
+        return response([
+            'message' => 'User registered',
+            'user' => $user,   
+            'access_token' => $accessToken
+        ],201);
     }
+        
+    
+        //     $user = new User();
+        //     $user->email = $request->email;
+        //     $user->password = Hash::make($request->password);
+        //     // if(!$request->username){
+        //     //     $user = 'Anonymous';
+        //     // }else{
+        //     //     $user->username = $request->usermane;
+        //     // }
+        //     $user->save();
+        //     $response = [
+        //         'user' => $user
+          //  ];
+        
+        
 
     public function login(Request $request)
     {
