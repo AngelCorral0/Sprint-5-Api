@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Passport\HasApiTokens;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,20 +41,25 @@ class AuthController extends Controller
         
     public function login(Request $request)
     {
-        $login= $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string'
-        ]);
-               
-        if(!Auth::attempt($login)){
-            return response(['message' =>'Invalid login credentials'],401);
-        }
+         $login= $request->validate([
+             'email' => 'required|string|email',
+             'password' => 'required|string'
+         ]);
 
-         $accessToken = auth()->user->createToken('authToken')->accessToken;
-                
-        return response([
-            'user'=> Auth::user(), 
-            'access_token'=> $accessToken]);
+         $user = User::where('email', $login['email'])->first();
+
+         if(!$user || !Hash::check($login['password'], $user->password)){
+            return response([
+                'message' => 'Invalid login credentials'],401);
+         }else{
+            $accessToken = $user->createToken('authToken')->accessToken;
+            $response = [
+                'user' => $user,
+                'token' => $accessToken
+            ];
+         }
+         return response($response, 201);
+       
     }
 
     public function logout(Request $request)
