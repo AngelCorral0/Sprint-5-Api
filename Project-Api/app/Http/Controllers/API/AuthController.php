@@ -20,46 +20,47 @@ class AuthController extends Controller
             'username' => ['max:25', 'string'],
             'password' => ['required', 'string']
         ]);
-        
-        if($request->username == null||$request->username ==''){
-            $request->merge(['username' => 'Anonymous']); 
-         }
-    
-         $validatedData['password'] = Hash::make($request->password);
+
+        if ($request->username == null || $request->username == '') {
+            $request->merge(['username' => 'Anonymous']);
+        }
+
+        $validatedData['password'] = Hash::make($request->password);
         $user = User::create($validatedData);
         $accessToken = $user->createToken('authToken')->accessToken;
-        
-        
+
+
         return response([
             'message' => 'User registered',
-        'user' => [
-            'username' => $user->username,
-            'email'=>$user->email,
-            'access_token' => $accessToken
-        ],201]);
+            'user' => [
+                'username' => $user->username,
+                'email' => $user->email,
+                'access_token' => $accessToken
+            ], 201
+        ]);
     }
-        
+
     public function login(Request $request)
     {
-         $login= $request->validate([
-             'email' => 'required|string|email',
-             'password' => 'required|string'
-         ]);
+        $login = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string'
+        ]);
 
-         $user = User::where('email', $login['email'])->first();
+        $user = User::where('email', $login['email'])->first();
 
-         if(!$user || !Hash::check($login['password'], $user->password)){
+        if (!$user || !Hash::check($login['password'], $user->password)) {
             return response([
-                'message' => 'Invalid login credentials'],401);
-         }else{
+                'message' => 'Invalid login credentials'
+            ], 401);
+        } else {
             $accessToken = $user->createToken('authToken')->accessToken;
             $response = [
                 'user' => $user,
                 'token' => $accessToken
             ];
-         }
-         return response($response, 201);
-       
+        }
+        return response($response, 201);
     }
 
     public function logout(Request $request)
@@ -68,7 +69,6 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logged out'
-        ],200);
+        ], 200);
     }
-
 }
