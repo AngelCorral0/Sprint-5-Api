@@ -15,8 +15,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        
-       $validatedData = $request->validate([
+        $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'string', 'email'],
             'username' => ['max:25', 'string'],
             'password' => ['required', 'string']
@@ -24,41 +23,22 @@ class AuthController extends Controller
         
         if($request->username == null||$request->username ==''){
             $request->merge(['username' => 'Anonymous']); 
-        }else{
-            $request->username;
-        }
-       
-        $validatedData['password'] = Hash::make($request->password);
-           
+         }
+    
+         $validatedData['password'] = Hash::make($request->password);
         $user = User::create($validatedData);
         $accessToken = $user->createToken('authToken')->accessToken;
-
-    
+        
+        
         return response([
             'message' => 'User registered',
         'user' => [
-            'username' => $request->username,
-            'email'=>$request->email,
+            'username' => $user->username,
+            'email'=>$user->email,
             'access_token' => $accessToken
         ],201]);
     }
         
-    
-        //     $user = new User();
-        //     $user->email = $request->email;
-        //     $user->password = Hash::make($request->password);
-        //     // if(!$request->username){
-        //     //     $user = 'Anonymous';
-        //     // }else{
-        //     //     $user->username = $request->usermane;
-        //     // }
-        //     $user->save();
-        //     $response = [
-        //         'user' => $user
-          //  ];
-        
-        
-
     public function login(Request $request)
     {
         $login= $request->validate([
