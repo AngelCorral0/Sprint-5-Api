@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('/players/login', [AuthController::class, 'login'])->name('login');
 
 
-    Route::get('/players/{user}', 'UserController@show');
+    Route::get('/players/{user}',  [UserController::class, 'editUsername'])->name('edit');
     Route::put('/players/{user}', 'UserController@update');
     Route::delete('/players/{user}', 'UserController@destroy');
 //});
