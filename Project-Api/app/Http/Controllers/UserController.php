@@ -9,57 +9,43 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         $user = User::all();
-        return response()->json($user);
+        return $user;
     }
 
-    public function register(Request $request)
+    public function editUsername(Request $request,$id)
     {
-       $request->validate([
-            'email' => ['required', 'unique:users', 'string', 'email'],
-            'username' => ['max:25', 'string'],
-            'password' => ['required', 'string']
-        ]);
+        $userAuth= Auth::user()->id;
+        if($userAuth == $id)
+        {
+            $user =User::find($id);
 
-            $user = new User();
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            if(!$request->username){
-                $user = 'Anonymous';
-            }else{
-                $user->username = $request->usermane;
-            }
-            $request->admin_password == "Admin123456" ? $user->assignRole('admin') : $user->assignRole('user');
-            $user->save();
-            $response = [
-                'user' => $user
-            ];
-        return response($response, 201);
+            $request->validate([
+                'username'=>'reuquired|max:25',
+            ]);
+        }else if(!User::fin($id))
+        {
+            return response([
+                'message'=>'Username not fount'
+            ],404);
+        }else
+        {
+            return response(['message'=>'Unauthorized'],401);
+        }    
+        $user->update($request->all());
+
+      $data= [
+        'message' => 'Username changed successfully',
+        'username' =>$user
+      ];
+
+      return response()->json($data);
     }
 
-    public function login(Request $request)
-    {
-        $login= $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string'
-        ]);
-       
-        $user = User::where('email', $login['email'])->first();
-        
-        if(!Auth::attempt($login)){
-            return response(['message' =>'Invalid login credentials'],401);
-        }else{
-            $accessToken = $user->createToken('authToken')->accessToken;
-        }
-        
-        return response(['user'=> Auth::user(), 'access_token'=> $accessToken]);
-    }
-
+   
     public function show(User $user)
     {
         return response()->json($user);
@@ -77,6 +63,10 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+        $data = [
+            'message'=>'User deleted successfully',
+            'username' => $user
+        ];
         return response()->json($user);
     }
 }
