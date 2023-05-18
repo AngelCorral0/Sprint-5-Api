@@ -6,17 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     
-    public function index()
-    {
-        $user = User::all();
-        return $user;
-    }
-
     public function editUsername(Request $request,$id)
     {
         $userAuth= Auth::user()->id;
@@ -36,38 +30,37 @@ class UserController extends Controller
         {
             return response(['message'=>'Unauthorized'],401);
         }    
+        
         $user->update($request->all());
-
-     
-
-      $user->update($request->all());
 
       return response([
         'message' => 'Username changed successfully'],201);
     }
 
    
-    public function show(User $user)
+    public function showAllUsers()
     {
-        return response()->json($user);
+        if(Auth::user()->role=='admin')
+        {
+            $users = User::all();
+            return response()->json($users);
+        }
+        return response([
+            'message'=> 'unauthorized'
+        ],401);
     }
 
-    public function update(Request $request, User $user)
+        public function destroy(User $user)
     {
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = $request->password;
-        $user->save();
-        return response()->json($user);
-    }
-
-    public function destroy(User $user)
-    {
-        $user->delete();
-        $data = [
-            'message'=>'User deleted successfully',
-            'username' => $user
-        ];
-        return response()->json($user);
+        if(Auth::user()->role=='admin')
+        {
+            $user->delete();
+            return response([
+                'message'=>'User deleted successfully'],200);
+        }
+       
+        return response([
+            'message'=>'Unauthorized'
+        ],401);
     }
 }
