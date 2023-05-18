@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -37,12 +38,12 @@ class UserController extends Controller
         }    
         $user->update($request->all());
 
-      $data= [
-        'message' => 'Username changed successfully',
-        'username' =>$user
-      ];
+     
 
-      return response()->json($data);
+      $user->update($request->all());
+
+      return response([
+        'message' => 'Username changed successfully'],201);
     }
 
    
