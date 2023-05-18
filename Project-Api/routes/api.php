@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\GameController;
 use App\Http\Controllers\API\UserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,14 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-
     Route::post('/players', [AuthController::class, 'register'])->name('register');
     Route::post('/players/login', [AuthController::class, 'login'])->name('login');
 
-
-    Route::get('/players/{user}',  [UserController::class, 'editUsername'])->name('edit');
-    Route::put('/players/{user}', 'UserController@update');
-    Route::delete('/players/{user}', 'UserController@destroy');
-//});
+    Route::middleware(['auth:api'])->group(function(){
+      
+    Route::put('/players/{id}',  [UserController::class, 'editUsername']);
+    //Route::put('/players/{user}', 'UserController@update');
+    //Route::delete('/players/{user}', 'UserController@destroy');
+});
