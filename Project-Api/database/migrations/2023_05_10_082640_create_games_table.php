@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('users_id'); // línea para crear la columna users_id
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->tinyInteger('dice1');
+            $table->tinyInteger('dice2');
+            $table->tinyInteger('total');
+            $table->string('result');
             $table->timestamps();
         });
     }
