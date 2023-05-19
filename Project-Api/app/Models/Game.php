@@ -16,7 +16,7 @@ class Game extends Model
         'dice2',
         'total',
         'result',
-        'user_id',
+        'users_id',
     ];
 
    public function UserGame()
