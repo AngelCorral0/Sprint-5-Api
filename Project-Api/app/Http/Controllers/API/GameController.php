@@ -21,39 +21,38 @@ class GameController extends Controller
         $result = $total== 7? 'You Win!' : 'You Lost';
 
         $game = new Game();
-
         $game->user_id = $id;
         $game->dice1;
         $game->dice2;
         $game->total;
         $game->result;
-
         $game->save();
 
-        
-
+        return response([
+            'message'=>'Dice Trhought executed'
+        ],200);
+       }else{
+        return response([
+            'message' =>'Unregistered user'
+        ]);
        }
-
-       
-
-
     }
-
-    
-    public function show(string $id)
+ 
+    public function userRanking($id)
     {
-        //
+        
+        
     }
 
    
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
    
     public function destroy(string $id)
     {
-        //
+        
     }
 }
