@@ -16,11 +16,11 @@ class Game extends Model
         'dice2',
         'total',
         'result',
-        'users_id',
+        'user_id',
     ];
 
    public function UserGame()
    {
-    return $this->hasMany(Game::class);
+    return $this->belongsTo(Game::class);
    }
 }
