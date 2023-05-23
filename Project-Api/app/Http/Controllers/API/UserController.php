@@ -19,9 +19,9 @@ class UserController extends Controller
             $user =User::find($id);
 
             $request->validate([
-                'username'=>'reuquired|max:25',
+                'username'=>'required|max:25',
             ]);
-        }else if(!User::fin($id))
+        }else if(!User::find($id))
         {
             return response([
                 'message'=>'Username not fount'
@@ -34,7 +34,7 @@ class UserController extends Controller
         $user->update($request->all());
 
       return response([
-        'message' => 'Username changed successfully'],201);
+        'message' => 'Username changed successfully'],200);
     }
 
    

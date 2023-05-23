@@ -36,8 +36,8 @@ class AuthController extends Controller
                 'username' => $user->username,
                 'email' => $user->email,
                 'access_token' => $accessToken
-            ], 201
-        ]);
+            ],
+        ],201);
     }
 
     public function login(Request $request)
