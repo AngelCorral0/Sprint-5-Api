@@ -42,7 +42,7 @@ return [
         ],
         
         'api'=> [
-            'dirver'=> 'passport',
+            'driver'=> 'passport',
             'provider'=> 'users',
             'hash'=> false,
         ]
