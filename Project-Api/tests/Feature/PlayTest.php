@@ -39,19 +39,7 @@ public function test_unauth_player_cannot_roll_dice()
         ->assertRedirect(route('login'));
 }
 
-//   public function test_auth_player_can_get_own_plays()
-//   {
-//       $this->artisan('passport:install');
-
-//       $user = User::factory()->create();
-//       Passport::actingAs($user);
-//       $response = $this->actingAs($user, 'api')->get(route('userGames', $user->id));
-//       $response->assertJsonFragment([
-//            'pepe']);
-    
-    
-//   }
-
+  
 public function test_unauth_player_cannot_get_own_plays()
 {
     $response = $this->getJson('api/players/{id}/games');
