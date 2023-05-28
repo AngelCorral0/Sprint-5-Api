@@ -17,10 +17,9 @@ class AuthController extends Controller
     {
         $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'string', 'email'],
-            'username' => ['max:25', 'string'],
+            'username' => ['max:25', 'string', 'nullable', 'unique:users'],
             'password' => ['required', 'string']
         ]);
-
         if ($request->username == null || $request->username == '') {
             $request->merge(['username' => 'Anonymous']);
         }
@@ -28,8 +27,7 @@ class AuthController extends Controller
         $validatedData['password'] = Hash::make($request->password);
         $user = User::create($validatedData);
         $accessToken = $user->createToken('authToken')->accessToken;
-
-
+        
         return response([
             'message' => 'User registered',
             'user' => [
@@ -63,12 +61,12 @@ class AuthController extends Controller
         return response($response, 201);
     }
 
-    public function logout(Request $request)
-    {
-        $request->user()->token()->revoke();
+    // public function logout(Request $request)
+    // {
+    //     $request->user()->token()->revoked();
 
-        return response()->json([
-            'message' => 'Logged out'
-        ], 200);
-    }
+    //     return response()->json([
+    //         'message' => 'Logged out'
+    //     ], 200);
+    // }
 }

@@ -70,16 +70,16 @@ class GameController extends Controller
         $games = Game::where('user_id', $id)->get();
 
         if ($games->isEmpty()) {
-            return response(['message' => 'No plays found for this user']);
+            return response(['message' => 'No plays found for this user'],401);
         }
 
         $wins = $games->where('result', 'You Win!')->count();
         $successPercentage = ($wins / $games->count()) * 100;
 
-        return [
+        return response([
             'plays' => $games,
             'success_percentage' => $successPercentage . '%',
-        ];
+        ],200);
     }
 
     public function rankingAverage()

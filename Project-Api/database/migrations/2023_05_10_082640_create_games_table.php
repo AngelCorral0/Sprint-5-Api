@@ -19,6 +19,7 @@ return new class extends Migration
             $table->tinyInteger('dice2');
             $table->tinyInteger('total');
             $table->string('result');
+            $table->integer('plays');
             $table->timestamps();
         });
     }
