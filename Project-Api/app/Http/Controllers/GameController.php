@@ -62,7 +62,6 @@ class GameController extends Controller
     public function userGames($id)
     {
         $authUser = Auth::user()->id;
-
         if ($authUser != $id) {
             return response(['message' => 'Access Denied'], 401);
         }
