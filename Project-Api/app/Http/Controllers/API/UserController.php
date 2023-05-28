@@ -24,7 +24,7 @@ class UserController extends Controller
         }else if(!User::find($id))
         {
             return response([
-                'message'=>'Username not fount'
+                'message'=>'Username not found'
             ],404);
         }else
         {
