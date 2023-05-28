@@ -54,7 +54,7 @@ class GameController extends Controller
             ->orderByDesc('total_score')
             ->get();
 
-            return response()->json($ranking);
+            return response()->json($ranking,200);
         }
 
     }
@@ -74,11 +74,11 @@ class GameController extends Controller
         }
 
         $wins = $games->where('result', 'You Win!')->count();
-        $successPercentage = ($wins / $games->count()) * 100;
+        $percentage = ($wins / $games->count()) * 100;
 
         return response([
             'plays' => $games,
-            'success_percentage' => $successPercentage . '%',
+            'percentage' => $percentage . '%',
         ],200);
     }
 
