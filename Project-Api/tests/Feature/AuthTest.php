@@ -42,7 +42,6 @@ class AuthTest extends TestCase
         $this->artisan('passport:install');
 
         $response = $this->postJson('api/players', [
-            'username' => '',
             'email' => 'user@email.com',
             'password' => 'UserPassword',
             ]);
@@ -180,15 +179,5 @@ class AuthTest extends TestCase
         $response->assertSessionHasErrors('password');
     }
 
-    // // logout testing
-    // /**@test */
-    // public function test_auth_user_can_logout()
-    // {
-    //     $this->artisan('passport:install');
-
-    //     $user = User::factory()->create();
-    //     Passport::actingAs($user);
-    //     $response = $this->postJson('api/players/logout');
-    //     $response->assertJson(200);
-    // }
+   
 }

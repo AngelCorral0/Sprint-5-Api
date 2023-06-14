@@ -10,57 +10,53 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    
-    public function editUsername(Request $request,$id)
+
+    public function editUsername(Request $request, $id)
     {
-        $userAuth= Auth::user()->id;
-        if($userAuth == $id)
-        {
-            $user =User::find($id);
+        $userAuth = auth()->user()->id;
+        if ($userAuth == $id) {
+            $user = User::find($id);
 
             $request->validate([
-                'username'=>'required|max:25',
+                'username' => 'required|max:25',
             ]);
-        }else if(!User::find($id))
-        {
+            $user->update($request->all());
             return response([
-                'message'=>'Username not found'
-            ],404);
-        }else
-        {
-            return response(['message'=>'Unauthorized'],401);
-        }    
-        
-        $user->update($request->all());
-
-      return response([
-        'message' => 'Username changed successfully'],200);
+                'message' => 'Username changed successfully'
+            ], 200);
+        } else if (!User::find($id)) {
+            return response([
+                'message' => 'Username not found'
+            ], 404);
+        } else {
+            return response(['message' => 'Unauthorized'], 401);
+        }
     }
 
-   
+
     public function showAllUsers()
     {
-        if(Auth::user()->role=='admin')
-        {
+        if (auth()->user()->role == 'admin') {
             $users = User::all();
             return response()->json($users);
+        } else {
+            return response([
+                'message' => 'unauthorized'
+            ], 401);
         }
-        return response([
-            'message'=> 'unauthorized'
-        ],401);
     }
 
-        public function destroy(User $user)
+    public function destroy(User $user)
     {
-        if(Auth::user()->role=='admin')
-        {
+        if (auth()->user()->role == 'admin') {
             $user->delete();
             return response([
-                'message'=>'User deleted successfully'],200);
+                'message' => 'User deleted successfully'
+            ], 200);
         }
-       
+
         return response([
-            'message'=>'Unauthorized'
-        ],401);
+            'message' => 'Unauthorized'
+        ], 401);
     }
 }
