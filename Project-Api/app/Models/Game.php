@@ -19,6 +19,13 @@ class Game extends Model
         'user_id',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'user_id',
+        'id',
+    ];
+
    public function UserGame()
    {
     return $this->belongsTo(Game::class);

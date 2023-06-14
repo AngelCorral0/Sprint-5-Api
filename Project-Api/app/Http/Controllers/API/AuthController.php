@@ -17,25 +17,36 @@ class AuthController extends Controller
     {
         $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'string', 'email'],
-            'username' => ['max:25', 'string', 'nullable', 'unique:users'],
+            'username' => ['max:25', 'string', 'unique:users'],
             'password' => ['required', 'string']
         ]);
-        if ($request->username == null || $request->username == '') {
-            $request->merge(['username' => 'Anonymous']);
-        }
+
 
         $validatedData['password'] = Hash::make($request->password);
         $user = User::create($validatedData);
-        $accessToken = $user->createToken('authToken')->accessToken;
-        
+
+        if ($request->username == null || $request->username == '' || !$request->username) {
+            $user->username = 'Anonymous';
+            $user->save();
+        }
+        $user->role = 'player';
+        $user->save();
+
+        if ($request->password == "adminrole") {
+            $user->role = 'admin';
+            $user->save();
+        }
+
         return response([
             'message' => 'User registered',
             'user' => [
+                'id' => $user->id,
                 'username' => $user->username,
                 'email' => $user->email,
-                'access_token' => $accessToken
+                'role' =>$user->role
+
             ],
-        ],201);
+        ], 201);
     }
 
     public function login(Request $request)
@@ -52,21 +63,15 @@ class AuthController extends Controller
                 'message' => 'Invalid login credentials'
             ], 401);
         } else {
+
             $accessToken = $user->createToken('authToken')->accessToken;
+
             $response = [
                 'user' => $user,
                 'token' => $accessToken
+
             ];
         }
         return response($response, 201);
     }
-
-    // public function logout(Request $request)
-    // {
-    //     $request->user()->token()->revoked();
-
-    //     return response()->json([
-    //         'message' => 'Logged out'
-    //     ], 200);
-    // }
 }

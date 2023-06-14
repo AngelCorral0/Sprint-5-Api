@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // línea para crear la columna users_id
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->tinyInteger('dice1');
-            $table->tinyInteger('dice2');
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->enum('dice1', [1, 2, 3, 4, 5, 6]);
+            $table->enum('dice2', [1, 2, 3, 4, 5, 6]);
             $table->tinyInteger('total');
             $table->string('result');
-            $table->integer('plays');
             $table->timestamps();
         });
     }
