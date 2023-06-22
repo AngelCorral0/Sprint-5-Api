@@ -14,20 +14,28 @@ class UserController extends Controller
     public function editUsername(Request $request, $id)
     {
         $userAuth = auth()->user()->id;
+      
         if ($userAuth == $id) {
             $user = User::find($id);
-
+            
+            if (!$user) {
+                return response([
+                    'message' => 'User not found'
+                ], 404);
+            }
+            //dd($request);
             $request->validate([
                 'username' => 'required|max:25',
             ]);
-            $user->update($request->all());
+            
+            $user->username = $request->username;
+            $user->save();
+            
+            
             return response([
+                'username' => $user->username,
                 'message' => 'Username changed successfully'
             ], 200);
-        } else if (!User::find($id)) {
-            return response([
-                'message' => 'Username not found'
-            ], 404);
         } else {
             return response(['message' => 'Unauthorized'], 401);
         }

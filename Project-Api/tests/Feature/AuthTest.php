@@ -23,7 +23,7 @@ class AuthTest extends TestCase
         $this->artisan('passport:install');
         $this->withoutExceptionHandling();
 
-        $response = $this->postJson('api/players', [
+        $response = $this->postJson('api/register', [
             'username' => 'username',
             'email' => 'user@email.com',
             'password' => 'password',
@@ -41,7 +41,7 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->postJson('api/players', [
+        $response = $this->postJson('api/register', [
             'email' => 'user@email.com',
             'password' => 'UserPassword',
             ]);
@@ -53,7 +53,7 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->post('api/players', [
+        $response = $this->post('api/register', [
             'username' => 'username',
             'email' => '',
             'password' => 'UserPassword',
@@ -67,7 +67,7 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->post('api/players', [
+        $response = $this->post('api/register', [
             'username' => 'username',
             'email' => 'user@email.com',
             'password' => '',
@@ -82,14 +82,14 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->post('api/players', [
+        $response = $this->post('api/register', [
             'username' => 'pepe',
             'email' => 'user@email.com',
             'password' => 'password',
             
         ]);
 
-        $response = $this->post('api/players', [
+        $response = $this->post('api/register', [
             'username' => 'pepe',
             'email' => 'otheruser@email.com',
             'password' => 'password',
@@ -103,14 +103,14 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->post('api/players', [
+        $response = $this->post('api/register', [
             'username' => 'username',
             'email' => 'user@email.com',
             'password' => 'password',
             
         ]);
 
-        $response = $this->post('api/players', [
+        $response = $this->post('api/register', [
             'username' => 'username',
             'email' => 'user@email.com',
             'password' => 'password',
@@ -130,7 +130,7 @@ class AuthTest extends TestCase
             'password' => bcrypt($password = 'password'),
         ]);
 
-        $response = $this->post('api/players/login', [
+        $response = $this->post('api/login', [
             'email' => $user->email,
             'password' =>$password,
         ]);
@@ -143,7 +143,7 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->post('api/players/login', [
+        $response = $this->post('api/login', [
             'email' => '',
             'password' => 'password'
         ]);
@@ -156,7 +156,7 @@ class AuthTest extends TestCase
     {
         $this->artisan('passport:install');
 
-        $response = $this->post('api/players/login', [
+        $response = $this->post('api/login', [
             'email' => 'test@email.com',
             'password' => ''
         ]);
@@ -167,14 +167,14 @@ class AuthTest extends TestCase
 
     public function test_errors_validation_login_email()
     {
-        $response = $this->post('api/players/login', []);
+        $response = $this->post('api/login');
         $response->assertStatus(302);
         $response->assertSessionHasErrors('email');
     }
 
     public function test_errors_validation_login_password()
     {
-        $response = $this->post('api/players/login', []);
+        $response = $this->post('api/login');
         $response->assertStatus(302);
         $response->assertSessionHasErrors('password');
     }

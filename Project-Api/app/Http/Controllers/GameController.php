@@ -13,14 +13,24 @@ class GameController extends Controller
 
     public function diceRoll($id)
     {
-        $authUser = auth()->user()->id;
+        $authUser = User::find(auth()->user()->id);
+        
+        if ($authUser->id == $id) {
 
-        if ($authUser == $id) {
-           
             $dice1 = rand(1, 6);
             $dice2 = rand(1, 6);
             $total = $dice1 + $dice2;
             $result = $total == 7 ? 'You Win!' : 'You Lost';
+
+            $authUser->total_rolls += 1;
+            if ($result == 'You Win!') {
+                $authUser->successful_rolls += 1;
+            }
+            $newPercentage = $authUser->successful_rolls / $authUser->total_rolls *100;
+            $authUser->winning_percentage = $newPercentage;
+
+            $authUser->save();
+
 
             $game = new Game();
             $game->user_id = $id;
@@ -28,35 +38,19 @@ class GameController extends Controller
             $game->dice2 = $dice2;
             $game->total = $total;
             $game->result = $result;
+
             $game->save();
 
             return response($game, 200);
-            
         } else {
-            
+
             return response([
                 'message' => 'Unregistered user'
             ]);
         }
     }
 
-    public function userRanking()
-    {
-        if (auth()->user()->role != 'admin') {
-            return response([
-                'message' => 'Unauthorized'
-            ], 401);
-        } else {
-            $ranking = User::leftJoin('games', 'users.id', '=', 'games.user_id')
-                ->select('users.id', 'users.username', DB::raw('SUM(games.total) as total_score'))
-                ->groupBy('users.id', 'users.username')
-                ->orderByDesc('total_score')
-                ->get();
-
-            return response()->json($ranking, 200);
-        }
-    }
-
+    
     public function userGames($id)
     {
         $authUser = auth()->user()->id;
@@ -81,22 +75,24 @@ class GameController extends Controller
 
     public function rankingAverage()
     {
-        if (auth()->user()->role != 'admin') {
-            return response(['message' => 'Unauthorized'], 401);
+        $authUser = auth()->user();
+        $users = User::orderBy('winning_percentage', 'desc')->get();
+        $usersRank = array();
+
+        if ($authUser->role == 'admin') {
+            return response($users, 201);
         } else {
-            $totalPlays = Game::count();
-            $totalSuccess = Game::where('result', 'You Win!')->count();
-
-            if ($totalPlays == 0) {
-                return response()->json(['message' => 'There are no plays']);
+            foreach ($users as $user) {
+                $userB = [
+                    'username' => $user->username,
+                    'winning percentage' => $user->winning_percentage,
+                    'total rolls' => $user->total_rolls,
+                    'successful rolls' => $user->successful_rolls,
+                ];
+                array_push($usersRank, $userB);
             }
-
-            $average_ranking = ($totalSuccess / $totalPlays) * 100;
+            return response($usersRank, 201);
         }
-
-        return response()->json([
-            'Average ranking of all users: ' => round($average_ranking, 2) . '%'
-        ]);
     }
 
     public function winner()
@@ -106,18 +102,18 @@ class GameController extends Controller
                 'message' => 'Unauthorized'
             ]);
         } else {
-            $winner = User::leftJoin('games', 'users.id', '=', 'games.user_id')
-                ->select('users.id', 'users.username', DB::raw('SUM(games.total) as total_score'))
-                ->groupBy('users.id', 'users.username')
-                ->orderByDesc('total_score')
-                ->limit(1)
-                ->get();
-
-            return response()->json([
-                'The winner is ' => $winner,
-            ]);
+            $loser = User::orderBy('winning_percentage', 'desc')->first();
+            $loserClean = [
+                'username' => $loser->username,
+                'winning percentage' => $loser->winning_percentage,
+                'total rolls' => $loser->total_rolls,
+                'successful rolls' => $loser->successful_rolls,
+            ];
         }
+        return response($loserClean, 201);
     }
+
+
     public function loser()
     {
         if (auth()->user()->role != 'admin') {
@@ -125,30 +121,34 @@ class GameController extends Controller
                 'message' => 'Unauthorized'
             ]);
         } else {
-            $loser = User::leftJoin('games', 'users.id', '=', 'games.user_id')
-                ->select('users.id', 'users.username', DB::raw('SUM(games.total) as total_score'))
-                ->groupBy('users.id', 'users.username')
-                ->orderBy('total_score')
-                ->limit(1)
-                ->get();
-
-            return response()->json([
-                'The loser is ' => $loser,
-            ]);
+            $loser = User::orderBy('winning_percentage', 'asc')->first();
+            $loserClean = [
+                'username' => $loser->username,
+                'winning percentage' => $loser->winning_percentage,
+                'total rolls' => $loser->total_rolls,
+                'successful rolls' => $loser->successful_rolls,
+            ];
         }
+        return response($loserClean, 201);
     }
 
     public function destroy(string $id)
     {
-        $authUser = auth()->user()->id;
+        $authUser = User::find(auth()->user()->id);
 
         if (!User::find($id)) {
             return response(['message' => 'User not found']);
-        } elseif ($authUser == $id) {
+        } elseif ($authUser->id == $id) {
             $userPlays = Game::where('user_id', $id)->first('id');
 
             if ($userPlays !== null) {
                 Game::where('user_id', $id)->delete();
+                
+                $authUser->winning_percentage = 0.00;
+                $authUser->successful_rolls = 0;
+                $authUser->total_rolls = 0;
+                $authUser->save();
+
                 return response(['message' => 'All your plays have been successfully removed']);
             } else {
                 return response(['message' => "You don't have any plays to remove"]);
