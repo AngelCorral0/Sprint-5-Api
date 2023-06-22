@@ -27,15 +27,15 @@ class AuthController extends Controller
 
         if ($request->username == null || $request->username == '' || !$request->username) {
             $user->username = 'Anonymous';
-            $user->save();
+            
         }
         $user->role = 'player';
-        $user->save();
+        
 
-        if ($request->password == "adminrole") {
+        if ($request->admin_password == "adminrole") {
             $user->role = 'admin';
-            $user->save();
         }
+        $user->save();
 
         return response([
             'message' => 'User registered',
@@ -43,7 +43,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'username' => $user->username,
                 'email' => $user->email,
-                'role' =>$user->role
+                'role' => $user->role
 
             ],
         ], 201);
